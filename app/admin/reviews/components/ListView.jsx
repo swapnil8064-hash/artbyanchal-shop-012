@@ -12,12 +12,16 @@ export default function ListView() {
   const { data: reviews } = useAllReview();
 
   return (
-    <div className="flex-1 flex flex-col gap-3 md:pr-5 md:px-0 px-5 rounded-xl">
-      <div className="flex flex-col gap-4">
-        {reviews?.map((item) => (
-          <ReviewCard key={item?.id} item={item} />
-        ))}
-      </div>
+    <div className="flex-1 flex flex-col gap-4 md:px-0 px-5 rounded-xl">
+      {reviews?.length === 0 ? (
+        <div className="text-gray-500 text-center py-10">No reviews found.</div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {reviews?.map((item) => (
+            <ReviewCard key={item?.id} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -27,11 +31,11 @@ function ReviewCard({ item }) {
   const { data: product } = useProduct({ productId: item?.productId });
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure you want to delete this review?")) return;
     setIsLoading(true);
     try {
       await deleteReview({ uid: item?.uid, productId: item?.productId });
-      toast.success("Successfully Deleted");
+      toast.success("Review successfully deleted");
     } catch (error) {
       toast.error(error?.message);
     }
@@ -39,14 +43,18 @@ function ReviewCard({ item }) {
   };
 
   return (
-    <div className="flex gap-3 bg-white border p-5 rounded-xl shadow-sm">
+    <div className="flex flex-col sm:flex-row gap-4 bg-white border rounded-xl p-5 shadow-md transition hover:shadow-lg">
       {/* Avatar */}
       <div className="flex-shrink-0">
-        <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200">
+        <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
           {item?.photoURL ? (
-            <img src={item.photoURL} alt="" className="h-full w-full object-cover" />
+            <img
+              src={item.photoURL}
+              alt={item.displayName}
+              className="h-full w-full object-cover"
+            />
           ) : (
-            <span className="text-gray-500 flex items-center justify-center h-full w-full">
+            <span className="text-gray-400 font-semibold">
               {item?.displayName?.[0] ?? "U"}
             </span>
           )}
@@ -54,22 +62,28 @@ function ReviewCard({ item }) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex justify-between items-start">
+      <div className="flex-1 flex flex-col gap-2">
+        <div className="flex justify-between items-start gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="font-semibold">{item?.displayName}</h1>
+            <h2 className="font-semibold text-gray-800">{item?.displayName}</h2>
 
             {/* Rating */}
             <div className="flex gap-1">
               {[...Array(5)].map((_, i) => (
-                <span key={i} className={i < item?.rating ? "text-yellow-400" : "text-gray-300"}>
+                <span
+                  key={i}
+                  className={i < item?.rating ? "text-yellow-400" : "text-gray-300"}
+                >
                   ★
                 </span>
               ))}
             </div>
 
+            {/* Product Link */}
             <Link href={`/products/${item?.productId}`}>
-              <h1 className="text-xs text-blue-500 hover:underline">{product?.title}</h1>
+              <span className="text-xs text-blue-500 hover:underline">
+                {product?.title ?? "Loading..."}
+              </span>
             </Link>
           </div>
 
@@ -77,17 +91,17 @@ function ReviewCard({ item }) {
           <button
             onClick={handleDelete}
             disabled={isLoading}
-            className={`p-2 rounded-lg transition ${
+            className={`p-2 rounded-lg transition-all duration-200 ${
               isLoading
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "bg-red-500 text-white hover:bg-red-600"
             }`}
           >
-            <Trash2 size={14} />
+            <Trash2 size={16} />
           </button>
         </div>
 
-        <p className="text-sm text-gray-700 pt-1">{item?.message}</p>
+        <p className="text-gray-700 text-sm">{item?.message}</p>
       </div>
     </div>
   );

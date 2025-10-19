@@ -21,7 +21,7 @@ export default function AddToCartButton({ productId, type }) {
     try {
       if (!user?.uid) {
         router.push("/login");
-        throw new Error("Please login first!");
+        throw new Error("Please log in first!");
       }
 
       if (isAdded) {
@@ -33,6 +33,7 @@ export default function AddToCartButton({ productId, type }) {
           uid: user?.uid,
         });
       }
+
       toast.success(isAdded ? "Removed from cart" : "Added to cart");
     } catch (error) {
       toast.error(error?.message);
@@ -41,20 +42,20 @@ export default function AddToCartButton({ productId, type }) {
   };
 
   const baseClasses =
-    "flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out";
+    "flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed";
 
   if (type === "cute") {
     return (
       <button
         onClick={handleClick}
         disabled={isLoading}
-        className={`${baseClasses} border ${
+        className={`${baseClasses} ${
           isAdded
             ? "border-pink-400 text-pink-600 hover:bg-pink-50"
-            : "border-blue-500 text-blue-600 hover:bg-blue-50"
-        } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            : "border-pink-200 text-pink-500 hover:bg-pink-50"
+        }`}
       >
-        {isAdded ? "Remove from Cart" : "Add To Cart"}
+        {!isAdded ? "Add to Bag" : "Remove from Bag"}
       </button>
     );
   }
@@ -64,24 +65,20 @@ export default function AddToCartButton({ productId, type }) {
       <button
         onClick={handleClick}
         disabled={isLoading}
-        className={`${baseClasses} bg-pink-500 text-white hover:bg-pink-600 ${
-          isLoading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        className={`${baseClasses} bg-pink-500 text-white hover:bg-pink-600`}
       >
         <Handbag size={16} className="animate-bounce" />
-        {isAdded ? "Remove" : "Add To Cart"}
+        {!isAdded ? "Add to Bag" : "Remove"}
       </button>
     );
   }
 
-  // Icon only
+  // Icon only variant
   return (
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className={`${baseClasses} bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 ${
-        isLoading ? "opacity-50 cursor-not-allowed" : ""
-      }`}
+      className={`${baseClasses} w-10 h-10 bg-pink-50 text-pink-500`}
     >
       <Handbag size={16} className={`${isAdded ? "text-pink-500" : ""}`} />
     </button>

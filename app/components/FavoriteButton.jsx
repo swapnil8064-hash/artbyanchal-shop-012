@@ -46,18 +46,18 @@ export default function FavoriteButton({ productId }) {
       onClick={handleClick}
       disabled={isLoading}
       className={`
-        relative flex items-center justify-center w-8 h-8 rounded-full 
-        transition-all duration-200 ease-in-out 
-        ${isLiked ? "bg-pink-500 text-white shadow-md scale-105" : "bg-white text-pink-500 border border-pink-400 hover:bg-pink-50"} 
-        ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+        flex items-center justify-center p-2 rounded-full 
+        transition-all duration-300
+        ${isLiked 
+          ? "bg-pink-600 text-white shadow-lg hover:bg-pink-700" 
+          : "bg-white text-pink-500 border border-pink-400 hover:bg-pink-50"}
+        disabled:opacity-50 disabled:cursor-not-allowed
       `}
       title={isLiked ? "Remove from favorites" : "Add to favorites"}
     >
       <Heart
         size={16}
-        className={`transition-transform duration-300 ${
-          isLiked ? "animate-pulse" : ""
-        }`}
+        className={`transition-transform duration-300 ${isLiked ? "animate-pulse" : ""}`}
       />
     </button>
   );

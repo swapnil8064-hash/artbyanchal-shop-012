@@ -1,131 +1,129 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { getAdmin } from "@/lib/firestore/admins/read_server";
 import { createNewAdmin, updateAdmin } from "@/lib/firestore/admins/write";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export default function Form() {
-  const [data, setData] = useState(null);
+export default function AdminForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id"); // this is email/id from URL
+
+  const [data, setData] = useState({
+    id: "", // will store email/id
+    name: "",
+    email: "",
+    imageURL: "",
+  });
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-
-  const fetchData = async () => {
-    try {
-      const res = await getAdmin({ id });
-      if (!res) {
-        toast.error("Admin Not Found!");
-      } else {
-        setData(res);
-      }
-    } catch (error) {
-      toast.error(error?.message);
-    }
-  };
-
+  // Fetch existing admin if updating
   useEffect(() => {
-    if (id) fetchData();
+    if (!id) return;
+
+    const fetchData = async () => {
+      try {
+        const res = await getAdmin({ id });
+        if (!res) {
+          toast.error("Admin Not Found!");
+          return;
+        }
+        // Add `id` to data for updateAdmin
+        setData({ ...res, id });
+      } catch (err) {
+        toast.error(err?.message);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   const handleData = (key, value) => {
     setData((prev) => ({ ...(prev ?? {}), [key]: value }));
   };
 
-  const handleCreate = async () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      await createNewAdmin({ data, image });
-      toast.success("Successfully Created");
-      setData(null);
-      setImage(null);
-    } catch (error) {
-      toast.error(error?.message);
-    }
-    setIsLoading(false);
-  };
-
-  const handleUpdate = async () => {
-    setIsLoading(true);
-    try {
-      await updateAdmin({ data, image });
-      toast.success("Successfully Updated");
-      setData(null);
-      setImage(null);
-      router.push(`/admin/admins`);
-    } catch (error) {
-      toast.error(error?.message);
+      if (id) {
+        // Update admin
+        await updateAdmin({ data, image });
+        toast.success("Admin Updated Successfully!");
+        router.push("/admin/admins");
+      } else {
+        // Create new admin
+        await createNewAdmin({ data, image });
+        toast.success("Admin Created Successfully!");
+        setData({ id: "", name: "", email: "", imageURL: "" });
+        setImage(null);
+      }
+    } catch (err) {
+      toast.error(err?.message);
     }
     setIsLoading(false);
   };
 
   return (
-    <div className="flex justify-center p-4 md:p-8">
-      <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-lg w-full max-w-md p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-deepPink-500">
+    <div className="flex justify-center p-4 md:p-10 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 md:p-10 flex flex-col gap-6 overflow-y-auto scrollbar-thin scrollbar-thumb-deepPink-500 scrollbar-track-gray-200">
+        <h1 className="text-3xl font-bold text-deepPink-600">
           {id ? "Update" : "Create"} Admin
         </h1>
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (id) handleUpdate();
-            else handleCreate();
+            handleSubmit();
           }}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-5"
         >
           {/* Image Upload */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-600 text-sm font-medium">
-              Image <span className="text-red-500">*</span>
-            </label>
-            {image && (
-              <div className="flex justify-center items-center p-2">
+            <label className="text-gray-700 font-medium">Profile Image</label>
+            {(image || data.imageURL) && (
+              <div className="flex justify-center p-2">
                 <img
-                  className="h-28 w-28 rounded-xl object-cover border-2 border-lightPink-300 shadow-sm"
-                  src={URL.createObjectURL(image)}
+                  src={image ? URL.createObjectURL(image) : data.imageURL}
                   alt="Preview"
+                  className="h-28 w-28 rounded-xl object-cover border-2 border-deepPink-300 shadow-md"
                 />
               </div>
             )}
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => e.target.files.length > 0 && setImage(e.target.files[0])}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-deepPink-300 transition-colors cursor-pointer"
+              onChange={(e) =>
+                e.target.files.length > 0 && setImage(e.target.files[0])
+              }
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-deepPink-300 cursor-pointer transition"
             />
           </div>
 
-          {/* Name Input */}
+          {/* Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-600 text-sm font-medium">
-              Name <span className="text-red-500">*</span>
-            </label>
+            <label className="text-gray-700 font-medium">Name</label>
             <input
               type="text"
               placeholder="Enter Name"
               value={data?.name ?? ""}
               onChange={(e) => handleData("name", e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-lightBlue-300 transition-all"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-lightBlue-300 transition"
               required
             />
           </div>
 
-          {/* Email Input */}
+          {/* Email */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-600 text-sm font-medium">
-              Email <span className="text-red-500">*</span>
-            </label>
+            <label className="text-gray-700 font-medium">Email</label>
             <input
               type="email"
               placeholder="Enter Email"
               value={data?.email ?? ""}
               onChange={(e) => handleData("email", e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-lightBlue-300 transition-all"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-lightBlue-300 transition"
               required
             />
           </div>
@@ -134,11 +132,11 @@ export default function Form() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition-all
+            className={`w-full py-3 rounded-xl font-semibold text-white text-lg transition-all
               ${
                 isLoading
                   ? "bg-pink-300 cursor-not-allowed animate-pulse"
-                  : "bg-deepPink-500 hover:bg-salmonPink-500 active:scale-95 shadow-md"
+                  : "bg-gradient-to-r from-deepPink-500 to-pink-400 hover:from-pink-400 hover:to-deepPink-500 active:scale-95 shadow-lg"
               }`}
           >
             {isLoading ? (
@@ -147,7 +145,7 @@ export default function Form() {
                 Processing...
               </span>
             ) : (
-              <>{id ? "Update" : "Create"}</>
+              <>{id ? "Update Admin" : "Create Admin"}</>
             )}
           </button>
         </form>

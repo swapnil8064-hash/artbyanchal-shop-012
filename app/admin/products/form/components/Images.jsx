@@ -1,3 +1,5 @@
+"use client";
+
 export default function Images({
   data,
   setFeatureImage,
@@ -6,74 +8,72 @@ export default function Images({
   setImageList,
 }) {
   return (
-    <section className="flex flex-col gap-3 bg-white border p-4 rounded-xl">
-      <h1 className="font-semibold">Images</h1>
-      <div className="flex flex-col gap-1">
-        {data?.featureImageURL && !featureImage && (
+    <section className="flex flex-col gap-4 bg-white border p-5 rounded-xl shadow-sm">
+      <h1 className="font-semibold text-lg text-gray-800">Images</h1>
+
+      {/* Feature Image */}
+      <div className="flex flex-col gap-2">
+        {(data?.featureImageURL && !featureImage) && (
           <div className="flex justify-center">
             <img
-              className="h-20 object-cover rounded-lg"
+              className="h-24 w-24 object-cover rounded-lg shadow-sm border"
               src={data?.featureImageURL}
-              alt=""
+              alt="Feature"
             />
           </div>
         )}
         {featureImage && (
           <div className="flex justify-center">
             <img
-              className="h-20 object-cover rounded-lg"
+              className="h-24 w-24 object-cover rounded-lg shadow-sm border"
               src={URL.createObjectURL(featureImage)}
-              alt=""
+              alt="Feature"
             />
           </div>
         )}
-        <label
-          className="text-gray-500 text-xs"
-          htmlFor="product-feature-image"
-        >
-          Feature Image <span className="text-red-500">*</span>{" "}
+
+        <label className="text-gray-500 text-xs font-medium" htmlFor="product-feature-image">
+          Feature Image <span className="text-red-500">*</span>
         </label>
         <input
           type="file"
           id="product-feature-image"
           name="product-feature-image"
-          onChange={(e) => {
-            if (e.target.files.length > 0) {
-              setFeatureImage(e.target.files[0]);
-            }
-          }}
-          className="border px-4 py-2 rounded-lg w-full outline-none"
+          onChange={(e) => e.target.files.length > 0 && setFeatureImage(e.target.files[0])}
+          className="border border-gray-300 px-4 py-2 rounded-lg w-full outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition cursor-pointer"
         />
       </div>
-      <div className="flex flex-col gap-1">
-        {imageList?.length === 0 && data?.imageList?.length != 0 && (
+
+      {/* Additional Images */}
+      <div className="flex flex-col gap-2">
+        {(imageList?.length === 0 && data?.imageList?.length > 0) && (
           <div className="flex flex-wrap gap-3">
-            {data?.imageList?.map((item) => {
-              return (
-                <img
-                  className="w-20 object-cover rounded-lg"
-                  src={item}
-                  alt=""
-                />
-              );
-            })}
+            {data?.imageList?.map((item, idx) => (
+              <img
+                key={idx}
+                className="w-24 h-24 object-cover rounded-lg shadow-sm border hover:scale-105 transition-transform"
+                src={item}
+                alt={`Image ${idx + 1}`}
+              />
+            ))}
           </div>
         )}
+
         {imageList?.length > 0 && (
           <div className="flex flex-wrap gap-3">
-            {imageList?.map((item) => {
-              return (
-                <img
-                  className="w-20 object-cover rounded-lg"
-                  src={URL.createObjectURL(item)}
-                  alt=""
-                />
-              );
-            })}
+            {imageList?.map((item, idx) => (
+              <img
+                key={idx}
+                className="w-24 h-24 object-cover rounded-lg shadow-sm border hover:scale-105 transition-transform"
+                src={URL.createObjectURL(item)}
+                alt={`Image ${idx + 1}`}
+              />
+            ))}
           </div>
         )}
-        <label className="text-gray-500 text-xs" htmlFor="product-images">
-          Images <span className="text-red-500">*</span>{" "}
+
+        <label className="text-gray-500 text-xs font-medium" htmlFor="product-images">
+          Images <span className="text-red-500">*</span>
         </label>
         <input
           type="file"
@@ -81,13 +81,10 @@ export default function Images({
           name="product-images"
           multiple
           onChange={(e) => {
-            const newFiles = [];
-            for (let i = 0; i < e.target.files.length; i++) {
-              newFiles.push(e.target.files[i]);
-            }
+            const newFiles = Array.from(e.target.files);
             setImageList(newFiles);
           }}
-          className="border px-4 py-2 rounded-lg w-full outline-none"
+          className="border border-gray-300 px-4 py-2 rounded-lg w-full outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition cursor-pointer"
         />
       </div>
     </section>

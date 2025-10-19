@@ -8,26 +8,33 @@ import toast from "react-hot-toast";
 
 export default function LogoutButton() {
   const { user } = useAuth();
-  if (!user) {
-    return <></>;
-  }
+  if (!user) return null;
+
+  const handleLogout = async () => {
+    if (!confirm("Are you sure you want to log out?")) return;
+
+    try {
+      await toast.promise(signOut(auth), {
+        loading: "Logging out...",
+        success: "Successfully logged out",
+        error: (e) => e?.message,
+      });
+    } catch (error) {
+      toast.error(error?.message);
+    }
+  };
+
   return (
     <button
-      onClick={async () => {
-        if (!confirm("Are you sure?")) return;
-        try {
-          await toast.promise(signOut(auth), {
-            error: (e) => e?.message,
-            loading: "Loading...",
-            success: "Successfully Logged out",
-          });
-        } catch (error) {
-          toast.error(error?.message);
-        }
-      }}
-      className="h-8 w-8 flex justify-center items-center rounded-full hover:bg-gray-50"
+      onClick={handleLogout}
+      title="Logout"
+      className="
+        h-8 w-8 flex justify-center items-center rounded-full
+        bg-white text-pink-500 shadow hover:bg-pink-50
+        transition-all duration-300
+      "
     >
-      <LogOut size={14} />
+      <LogOut size={16} />
     </button>
   );
 }

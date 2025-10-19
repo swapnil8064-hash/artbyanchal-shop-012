@@ -37,7 +37,7 @@ export default function BrandForm() {
     setIsLoading(true);
     try {
       await createNewBrand({ data, image });
-      toast.success("Successfully Created");
+      toast.success("Brand Created Successfully!");
       setData(null);
       setImage(null);
     } catch (error) {
@@ -50,7 +50,7 @@ export default function BrandForm() {
     setIsLoading(true);
     try {
       await updateBrand({ data, image });
-      toast.success("Successfully Updated");
+      toast.success("Brand Updated Successfully!");
       setData(null);
       setImage(null);
       router.push(`/admin/brands`);
@@ -61,9 +61,9 @@ export default function BrandForm() {
   };
 
   return (
-    <div className="flex justify-center p-4 md:p-8">
-      <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-lg w-full max-w-md p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-deepPink-600">
+    <div className="flex justify-center px-4 md:px-6 py-8 md:py-12 bg-gray-50 min-h-screen">
+      <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-gray-200">
+        <h1 className="text-2xl md:text-3xl font-bold text-pink-600 text-center">
           {id ? "Update" : "Create"} Brand
         </h1>
 
@@ -72,17 +72,17 @@ export default function BrandForm() {
             e.preventDefault();
             id ? handleUpdate() : handleCreate();
           }}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-5"
         >
           {/* Image Upload */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-600 text-sm font-medium">
-              Image <span className="text-red-500">*</span>
+            <label className="text-gray-700 text-sm font-medium">
+              Brand Image <span className="text-red-500">*</span>
             </label>
             {image && (
-              <div className="flex justify-center items-center p-2">
+              <div className="flex justify-center">
                 <img
-                  className="h-28 w-28 rounded-xl object-cover border-2 border-lightPink-300 shadow-sm"
+                  className="h-28 w-28 md:h-32 md:w-32 rounded-xl object-cover border-2 border-pink-300 shadow-lg"
                   src={URL.createObjectURL(image)}
                   alt="Preview"
                 />
@@ -94,21 +94,21 @@ export default function BrandForm() {
               onChange={(e) =>
                 e.target.files.length > 0 && setImage(e.target.files[0])
               }
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-deepPink-300 transition-colors cursor-pointer"
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer transition-colors"
             />
           </div>
 
           {/* Name Input */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-600 text-sm font-medium">
-              Name <span className="text-red-500">*</span>
+            <label className="text-gray-700 text-sm font-medium">
+              Brand Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              placeholder="Enter Name"
+              placeholder="Enter Brand Name"
               value={data?.name ?? ""}
               onChange={(e) => handleData("name", e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-lightBlue-300 transition-all"
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all"
             />
           </div>
 
@@ -116,12 +116,11 @@ export default function BrandForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition-all
-              ${
-                isLoading
-                  ? "bg-pink-300 cursor-not-allowed animate-pulse"
-                  : "bg-deepPink-500 hover:bg-salmonPink-500 active:scale-95 shadow-md"
-              }`}
+            className={`w-full py-3 rounded-xl font-semibold text-white text-sm md:text-base transition-all ${
+              isLoading
+                ? "bg-pink-300 cursor-not-allowed animate-pulse"
+                : "bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-600 hover:to-pink-500 active:scale-95 shadow-lg"
+            }`}
           >
             {isLoading ? (
               <span className="flex justify-center items-center gap-2">
@@ -129,7 +128,7 @@ export default function BrandForm() {
                 Processing...
               </span>
             ) : (
-              <>{id ? "Update" : "Create"}</>
+              <span>{id ? "Update Brand" : "Create Brand"}</span>
             )}
           </button>
         </form>

@@ -10,33 +10,37 @@ export default function FeaturedProductSlider({ featuredProducts }) {
   if (!featuredProducts?.length) return null;
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
-    speed: 400,
+    speed: 3500,
+    autoplay: true,
+    autoplaySpeed: 3500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
   };
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden w-full py-5 md:py-10">
       <Slider {...settings}>
-        {featuredProducts.map((product, idx) => (
-          <div key={idx} className="px-2">
-            <div className="flex flex-col-reverse md:flex-row items-center gap-4 p-5 md:px-20 md:py-16 bg-gradient-to-tr from-[#ffe4e1] to-[#ff69b4] rounded-xl shadow-lg transition-transform duration-300 hover:scale-105">
+        {featuredProducts.map((product) => (
+          <div key={product?.id}>
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center bg-white md:px-20 md:py-16 px-5 py-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
               
               {/* Left text & buttons */}
-              <div className="flex-1 flex flex-col gap-4 md:gap-8">
-                <h4 className="text-xs md:text-sm font-semibold text-pink-600">NEW FASHION</h4>
+              <div className="flex-1 flex flex-col gap-4 md:gap-6">
+                <h2 className="text-sm md:text-base text-pink-400 font-semibold">NEW ARRIVAL</h2>
                 <Link href={`/products/${product?.id}`}>
-                  <h1 className="text-xl md:text-4xl font-bold text-black line-clamp-2">{product?.title}</h1>
+                  <h1 className="text-2xl md:text-4xl font-bold text-black hover:text-pink-500 transition-colors duration-200 line-clamp-2">
+                    {product?.title}
+                  </h1>
                 </Link>
-                <p className="text-gray-700 text-xs md:text-sm line-clamp-2">{product?.shortDescription}</p>
+                <p className="text-gray-600 text-xs md:text-sm max-w-md line-clamp-2">
+                  {product?.shortDescription}
+                </p>
                 <AuthContextProvider>
-                  <div className="flex flex-wrap gap-3 mt-2">
+                  <div className="flex gap-3 flex-wrap mt-2">
                     <Link href={`/checkout?type=buynow&productId=${product?.id}`}>
-                      <button className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 md:px-6 md:py-2 rounded-lg text-xs md:text-sm font-semibold transition-all">
+                      <button className="px-4 py-2 bg-pink-500 text-white font-semibold rounded-lg text-xs md:text-sm hover:bg-pink-600 transition-colors duration-200">
                         BUY NOW
                       </button>
                     </Link>
@@ -47,12 +51,12 @@ export default function FeaturedProductSlider({ featuredProducts }) {
               </div>
 
               {/* Right image */}
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex justify-center md:justify-end">
                 <Link href={`/products/${product?.id}`}>
                   <img
                     src={product?.featureImageURL}
                     alt={product?.title}
-                    className="h-48 md:h-80 w-full object-cover rounded-lg shadow-md"
+                    className="h-56 md:h-80 w-full md:w-auto object-cover rounded-xl hover:scale-105 transition-transform duration-300"
                   />
                 </Link>
               </div>
